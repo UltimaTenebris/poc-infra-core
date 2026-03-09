@@ -1,4 +1,4 @@
-location = "germanywestcentral"
+location = "australiaeast"
 
 prefix = "bestrong"
 

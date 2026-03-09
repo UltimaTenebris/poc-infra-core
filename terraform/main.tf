@@ -3,6 +3,7 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
+
 resource "azurerm_storage_account" "storage" {
   name                     = "team1storageac"
   resource_group_name      = azurerm_resource_group.rg.name
@@ -25,3 +26,35 @@ resource "azurerm_storage_container" "blob_container" {
   storage_account_name  = azurerm_storage_account.storage.name
   container_access_type = "private"
 }
+
+resource "azurerm_cognitive_account" "doc_intelligence" {
+  name                = "ocr-doc-ai"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  kind                = "FormRecognizer"
+  sku_name            = "S0"
+}
+
+resource "azurerm_cognitive_account" "openai" {
+  name                = "ocr-openai-01"
+  location            = "francecentral"
+  resource_group_name = azurerm_resource_group.rg.name
+  kind                = "OpenAI"
+  sku_name            = "S0"
+}
+
+# resource "azurerm_cognitive_deployment" "gpt4o" {
+#   name                 = "gpt4o-mini"
+#   cognitive_account_id = azurerm_cognitive_account.openai.id
+
+#   model {
+#     format  = "OpenAI"
+#     name    = "gpt-4o-mini"
+#     version = "2024-07-18"
+#   }
+
+#   scale {
+#     type     = "Standard"
+#     capacity = 1
+#   }
+# }
