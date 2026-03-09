@@ -7,6 +7,6 @@ variable "prefix" {
 }
 
 variable "environment" {
-  type = string
+  type        = string
   description = "Environment (dev / stage / prod)"
 }
