@@ -15,6 +15,12 @@ resource "azurerm_storage_account" "storage" {
   }
 }
 
+resource "azurerm_storage_container" "container" {
+  name                  = "tfstate"
+  storage_account_name  = azurerm_storage_account.storage.name
+  container_access_type = "private"
+}
+
 resource "azurerm_storage_share" "pdf_share" {
   name                 = "team1pdffiles"
   storage_account_name = azurerm_storage_account.storage.name
