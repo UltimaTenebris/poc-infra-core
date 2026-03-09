@@ -1,5 +1,5 @@
 variable "location" {
-  default = "germanywestcentral"
+  default = "swedencentral"
 }
 
 variable "prefix" {

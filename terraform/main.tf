@@ -1,10 +1,10 @@
 resource "azurerm_resource_group" "rg" {
-  name     = "BeStrongTeam01"
+  name     = "BeStrongTeam1"
   location = var.location
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                     = "team1torage"
+  name                     = "team1storageac"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"

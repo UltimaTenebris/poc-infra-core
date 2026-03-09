@@ -8,7 +8,7 @@ resource "azurerm_cognitive_account" "doc_intelligence" {
 
 resource "azurerm_cognitive_account" "openai" {
   name                = "ocr-openai"
-  location            = azurerm_resource_group.rg.location
+  location            = "East US"
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "OpenAI"
   sku_name            = "S0"
