@@ -6,14 +6,14 @@ resource "azurerm_service_plan" "example" {
   sku_name            = "Y1"
 }
 
-resource "azurerm_windows_function_app" "example" {
-  name                = "function-app-${terraform.workspace}"
+resource "azurerm_linux_function_app" "az-linux-fa" {
+  name                = "function-app-bestring${terraform.workspace}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
   storage_account_name       = azurerm_storage_account.storage.name
   storage_account_access_key = azurerm_storage_account.storage.primary_access_key
-  service_plan_id            = azurerm_service_plan.az-sp-ly1.id
+  service_plan_id            = azurerm_service_plan.example.id
 
   identity {
     type = "SystemAssigned"
@@ -35,11 +35,10 @@ resource "azurerm_windows_function_app" "example" {
 
     DOC_INTEL_ENDPOINT = "https://${azurerm_cognitive_account.doc_intelligence.custom_subdomain_name}.cognitiveservices.azure.com/"
     
-    AZURE_OPENAI_ENDPOINT = "https://${azurerm_cognitive_account.openai.custom_subdomain_name}.openai.azure.com"
+    # AZURE_OPENAI_ENDPOINT = "https://${azurerm_cognitive_account.openai.custom_subdomain_name}.openai.azure.com"
     AZURE_OPENAI_DEPLOYMENT = "o3-mini"
 
     STORAGE_ACCOUNT_NAME = azurerm_storage_account.storage.name
-    FILE_SHARE_NAME      = azurerm_storage_share.pdf_share.name
 
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.func_ai.connection_string
 
