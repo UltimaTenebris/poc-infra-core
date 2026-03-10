@@ -1,0 +1,36 @@
+name: Deploy Azure Function
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    paths:
+      - "function/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to DEV Function
+        if: github.ref == 'refs/heads/dev'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: function-app-dev
+          package: ./function
+
+      - name: Deploy to PROD Function
+        if: github.ref == 'refs/heads/main'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: function-app-bestrong
+          package: ./function

@@ -34,5 +34,11 @@ resource "azurerm_role_assignment" "function_fileshare_data_prev" {
   principal_id         = azurerm_linux_function_app.az-linux-fa.identity[0].principal_id
 }
 
+resource "azurerm_role_assignment" "function_fileshare_blob" {
+  scope                = azurerm_storage_account.storage.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_linux_function_app.az-linux-fa.identity[0].principal_id
+}
+
 
 

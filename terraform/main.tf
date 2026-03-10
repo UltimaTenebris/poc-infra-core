@@ -27,8 +27,14 @@ resource "azurerm_storage_share" "pdf_share" {
   quota                = 50
 }
 
-resource "azurerm_storage_container" "blob_container" {
-  name                  = "team1blobcontainer"
+resource "azurerm_storage_container" "input" {
+  name                  = "input"
+  storage_account_name  = azurerm_storage_account.storage.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "output" {
+  name                  = "output"
   storage_account_name  = azurerm_storage_account.storage.name
   container_access_type = "private"
 }
@@ -69,6 +75,6 @@ resource "azurerm_cognitive_deployment" "gpt4o" {
 
   scale {
     type     = "GlobalStandard"
-    capacity = 1
+    capacity = 11
   }
 }
