@@ -41,7 +41,7 @@ def ocr(blob: func.InputStream):
         credential=credential
     )
 
-    # ---- IDEMPOTENCY ----
+    # IDEMPOTENCY CHECK
 
     try:
         blob_client.get_blob_properties()
