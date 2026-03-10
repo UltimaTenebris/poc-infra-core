@@ -32,5 +32,5 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: Azure/functions-action@v1
         with:
-          app-name: function-app-bestrong
+          app-name: function-app-bestring
           package: ./function
