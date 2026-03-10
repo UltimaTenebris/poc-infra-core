@@ -31,7 +31,7 @@ def send_discord_notification(blob_name: str, ai_json: dict, output_name: str):
     message = {
         "embeds": [
             {
-                "title": "Receipt processed",
+                "title": "Receipt processed_v2",
                 "description": f"File: **{blob_name}**",
                 "url": blob_url,
                 "color": 5814783,
