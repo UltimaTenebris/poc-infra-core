@@ -3,6 +3,9 @@ import json
 import os
 import requests
 
+from azure.storage.blob import generate_blob_sas, BlobSasPermissions
+from datetime import datetime, timedelta
+
 from azure.core.exceptions import ResourceNotFoundError, ResourceExistsError
 
 import azure.functions as func
@@ -26,12 +29,23 @@ def send_discord_notification(blob_name: str, ai_json: dict, output_name: str):
         logging.warning("Discord webhook not configured")
         return
 
-    blob_url = f"https://{storage_account}.blob.core.windows.net/output/{output_name}"
+    account_key = os.getenv("STORAGE_ACCOUNT_KEY")
+
+    sas = generate_blob_sas(
+        account_name=storage_account,
+        container_name="output",
+        blob_name=output_name,
+        account_key=account_key,
+        permission=BlobSasPermissions(read=True),
+        expiry=datetime.utcnow() + timedelta(hours=1)
+    )
+
+    blob_url = f"https://{storage_account}.blob.core.windows.net/output/{output_name}?{sas}"
 
     message = {
         "embeds": [
             {
-                "title": "Receipt processed_v2",
+                "title": "Receipt processed_v3",
                 "description": f"File: **{blob_name}**",
                 "url": blob_url,
                 "color": 5814783,
