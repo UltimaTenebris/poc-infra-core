@@ -1,14 +1,13 @@
-resource "azurerm_service_plan" "az-sp-ly1" {
-  name                = "example-app-service-plan"
+resource "azurerm_service_plan" "example" {
+  name                = "example-app-service-plan-${terraform.workspace}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   os_type             = "Linux"
   sku_name            = "Y1"
 }
 
-
-resource "azurerm_linux_function_app" "az-linux-fa" {
-  name                = "function-app-bestring"
+resource "azurerm_windows_function_app" "example" {
+  name                = "function-app-${terraform.workspace}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 

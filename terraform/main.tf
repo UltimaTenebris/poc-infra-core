@@ -1,46 +1,29 @@
 resource "azurerm_resource_group" "rg" {
-  name     = "BeStrongTeam1"
+  name     = "BeStrongTeam01${terraform.workspace}"
   location = var.location
 }
 
 
 resource "azurerm_storage_account" "storage" {
-  name                     = "team1storageac"
+  name                     = "team1storage${terraform.workspace}"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+
   tags = {
     environment = var.environment
   }
 }
 
-resource "azurerm_storage_container" "container" {
-  name                  = "tfstate"
-  storage_account_name  = azurerm_storage_account.storage.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_share" "pdf_share" {
-  name                 = "team1pdffiles"
-  storage_account_name = azurerm_storage_account.storage.name
-  quota                = 50
-}
-
-resource "azurerm_storage_container" "input" {
-  name                  = "input"
-  storage_account_name  = azurerm_storage_account.storage.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_container" "output" {
-  name                  = "output"
+resource "azurerm_storage_container" "blob_container" {
+  name                  = "team1blobcontainer${terraform.workspace}"
   storage_account_name  = azurerm_storage_account.storage.name
   container_access_type = "private"
 }
 
 resource "azurerm_cognitive_account" "doc_intelligence" {
-  name                = "ocr-doc-ai"
+  name                = "ocr-doc-ai${terraform.workspace}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "FormRecognizer"
@@ -53,8 +36,8 @@ resource "azurerm_cognitive_account" "doc_intelligence" {
 
 
 resource "azurerm_cognitive_account" "openai" {
-  name                = "ocr-openai-01"
-  location            = "francecentral"
+  name                = "ocr-openai-01${terraform.workspace}"
+  location            = "westeurope"
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "OpenAI"
   sku_name            = "S0"

@@ -2,5 +2,5 @@ location = "australiaeast"
 
 prefix = "bestrong"
 
-environment = "dev"
+environment = "prod"
 
