@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+import requests
 
 from azure.core.exceptions import ResourceNotFoundError, ResourceExistsError
 
@@ -15,6 +16,42 @@ from openai import AzureOpenAI
 app = func.FunctionApp()
 
 credential = DefaultAzureCredential()
+# FUNCTIONS
+def send_discord_notification(blob_name: str, ai_json: dict):
+
+    webhook = os.getenv("DISCORD_WEBHOOK_URL")
+
+    if not webhook:
+        logging.warning("Discord webhook not configured")
+        return
+
+    message = {
+        "embeds": [
+            {
+                "title": "Receipt processed",
+                "description": f"File: {blob_name}",
+                "color": 5814783,
+                "fields": [
+                    {
+                        "name": "High price",
+                        "value": str(ai_json.get("high_price")),
+                        "inline": True
+                    },
+                    {
+                        "name": "Low price",
+                        "value": str(ai_json.get("low_price")),
+                        "inline": True
+                    }
+                ]
+            }
+        ]
+    }
+
+    try:
+        requests.post(webhook, json=message, timeout=10)
+    except Exception as e:
+        logging.error(f"Discord notification failed: {e}")
+# /FUNCTIONS
 
 
 @app.blob_trigger(
@@ -110,3 +147,9 @@ def ocr(blob: func.InputStream):
     )
 
     logging.info(f"Output written to output/{output_name}")
+
+    try:
+        send_discord_notification(blob_name, ai_json)
+    except Exception as e:
+        logging.warning(f"Discord failed but OCR succeeded: {e}")
+        

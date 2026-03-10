@@ -43,5 +43,6 @@ resource "azurerm_linux_function_app" "az-linux-fa" {
     FILE_SHARE_NAME      = azurerm_storage_share.pdf_share.name
 
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.func_ai.connection_string
+
   }
 }
