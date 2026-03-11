@@ -11,7 +11,7 @@ resource "azurerm_storage_account" "storage" {
   account_replication_type = "LRS"
 
   tags = {
-    environment = var.environment
+    environment = terraform.workspace
   }
 }
 
