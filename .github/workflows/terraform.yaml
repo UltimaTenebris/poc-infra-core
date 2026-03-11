@@ -34,12 +34,23 @@ jobs:
       fi
 
   - name: Terraform Init
-    run: terraform init --reconfigure
-    working-directory: terraform
-
+    working-directory: ./terraform
+    run: |
+        terraform init \
+        -backend-config="key=terraform.tfstate.${{ github.ref_name }}"
+          
+  - name: Select workspace
+    working-directory: ./terraform
+    run: |
+      if [ "${{ github.ref_name }}" == "main" ]; then
+        terraform workspace select prod || terraform workspace new prod
+      else
+        terraform workspace select dev || terraform workspace new dev
+      fi 
+          
   - name: Terraform Plan
+    working-directory: ./terraform
     run: terraform plan
-    working-directory: terraform
   
   # - name: Terraform Apply
   #   run: terraform apply -auto-approve
