@@ -52,6 +52,8 @@ jobs:
       working-directory: terraform
       env:
         TF_VAR_discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        TF_VAR_telegram_bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TF_VAR_telegram_chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: terraform apply --auto-approve
       
 

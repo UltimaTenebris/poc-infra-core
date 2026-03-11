@@ -115,7 +115,7 @@ def send_telegram_notification(blob_name, ai_json, file_url):
 
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = {
-        "chat_id": chat_id,
+        "chat_id": chat_id, 
         "text": text,
         "parse_mode": "Markdown",
         "disable_web_page_preview": True

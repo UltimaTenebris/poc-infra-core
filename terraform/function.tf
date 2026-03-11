@@ -44,8 +44,12 @@ resource "azurerm_linux_function_app" "az-linux-fa" {
 
     SUFFIX = terraform.workspace
 
-    #SECRET :D
+    #SECRETS
     DISCORD_WEBHOOK_URL = var.discord_webhook
+
+    TELEGRAM_BOT_TOKEN = var.telegram_bot_token
+
+    TELEGRAM_CHAT_ID = var.telegram_chat_id
 
   }
 }
