@@ -33,7 +33,7 @@ jobs:
       working-directory: ./terraform
       run: |
         terraform init \
-        -backend-config="key=terraform.tfstateenv:${{ github.ref_name }}"
+        -backend-config="key=terraform.tfstateenv:dev"
 
     - name: Select workspace
       run: |
@@ -43,16 +43,6 @@ jobs:
         terraform workspace select dev || terraform workspace new dev
        fi
 
-  
-    - name: Select workspace
-      working-directory: ./terraform
-      run: |
-       if [ "${{ github.ref_name }}" == "main" ]; then
-        terraform workspace select prod || terraform workspace new prod
-       else
-        terraform workspace select dev || terraform workspace new dev
-       fi 
-          
     - name: Terraform Plan
       working-directory: ./terraform
       run: terraform plan
