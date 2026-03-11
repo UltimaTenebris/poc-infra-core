@@ -30,10 +30,10 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Terraform Init
-      working-directory: ./terraform
+      working-directory: terraform
       run: |
         terraform init \
-        -backend-config="key=terraform.tfstateenv:dev"
+        -backend-config='key=terraform.tfstateenv:dev'
 
     - name: Select workspace
       run: |
@@ -44,7 +44,7 @@ jobs:
        fi
 
     - name: Terraform Plan
-      working-directory: ./terraform
+      working-directory: terraform
       run: terraform plan
   
     # - name: Terraform Apply

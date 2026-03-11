@@ -9,7 +9,7 @@ terraform {
     resource_group_name  = "Backend"
     storage_account_name = "team1storageforbacekfend"
     container_name       = "tfstate"
-    key                  = "terraform.tfstateenv:dev"
+    key                  = "terraform.tfstate"
   }
 }
 
