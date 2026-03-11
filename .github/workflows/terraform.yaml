@@ -33,7 +33,7 @@ jobs:
       working-directory: terraform
       run: |
         terraform init \
-        -backend-config='key=terraform.tfstateenv:dev'
+        -backend-config='key=terraform.tfstateenv%3Adev'
 
     - name: Select workspace
       run: |
