@@ -25,7 +25,7 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 
 
 def log_info(msg):
-    logging.info(f"[v5PROGPY] {msg}")
+    logging.info(f"[v5fPROGPY] {msg}")
 
 
 def log_error(msg):
