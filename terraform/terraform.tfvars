@@ -1,3 +1,4 @@
 location = "australiaeast"
 
 prefix = "bestrong"
+ 
