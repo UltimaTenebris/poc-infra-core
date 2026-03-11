@@ -3,3 +3,9 @@
 *.tfstate
 *.tfstate.*
 secrets.auto.tfvars
+
+.idea/
+.DS_Store
+**/.DS_Store
+
+

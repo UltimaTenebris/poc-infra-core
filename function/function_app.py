@@ -2,13 +2,14 @@ import logging
 import json
 import os
 import requests
+from datetime import datetime, timedelta, timezone
 
 import azure.functions as func
 
 from azure.core.exceptions import ResourceNotFoundError, HttpResponseError
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from azure.ai.formrecognizer import DocumentAnalysisClient
-from azure.storage.blob import BlobClient
+from azure.storage.blob import BlobClient, generate_blob_sas, BlobSasPermissions, BlobServiceClient
 from openai import AzureOpenAI
 
 app = func.FunctionApp()
@@ -30,6 +31,103 @@ def log_info(msg):
 
 def log_error(msg):
     logging.error(f"[PROGPY] {msg}")
+
+
+def get_blob_sas_url(container_name: str, blob_name: str) -> str:
+    """Генерує тимчасове посилання (на 1 годину) для файлу з Blob Storage."""
+    try:
+        # AzureWebJobsStorage - стандартна змінна для підключення до стораджа у Function App
+        conn_str = os.environ.get("AzureWebJobsStorage")
+        if not conn_str:
+            log_error("Не знайдено AzureWebJobsStorage для генерації SAS.")
+            return ""
+
+        blob_service_client = BlobServiceClient.from_connection_string(conn_str)
+        account_name = blob_service_client.account_name
+        account_key = blob_service_client.credential.account_key
+
+        sas_token = generate_blob_sas(
+            account_name=account_name,
+            container_name=container_name,
+            blob_name=blob_name,
+            account_key=account_key,
+            permission=BlobSasPermissions(read=True),
+            expiry=datetime.now(timezone.utc) + timedelta(hours=1)
+        )
+
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+        sas_url = f"{blob_client.url}?{sas_token}"
+
+        log_info(f"SAS URL успішно згенеровано для {blob_name}")
+        return sas_url
+
+    except Exception as e:
+        log_error(f"Помилка генерації SAS URL: {e}")
+        return ""
+
+
+def send_discord_notification(blob_name, ai_json, file_url):
+    webhook = os.getenv("DISCORD_WEBHOOK_URL")
+
+    if not webhook:
+        logging.warning("[PROGPY] DISCORD_WEBHOOK_URL not set")
+        return
+
+    message = {
+        "content": f"""
+📄 **Receipt processed**
+
+**File:** {blob_name}
+**Link:** [Download JSON (valid for 1h)]({file_url})
+
+**High price:** {ai_json.get("high_price")}
+**Low price:** {ai_json.get("low_price")}
+"""
+    }
+
+    try:
+        resp = requests.post(webhook, json=message, timeout=10)
+        log_info(f"Discord response status={resp.status_code}, body={resp.text[:500]}")
+        resp.raise_for_status()
+    except Exception as e:
+        log_error(f"Discord failed: {type(e).__name__}: {e}")
+        logging.exception("[PROGPY] DISCORD FAILED")
+        raise
+
+
+def send_telegram_notification(blob_name, ai_json, file_url):
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+
+    if not bot_token or not chat_id:
+        logging.warning("[PROGPY] TELEGRAM secrets not set")
+        return
+
+    text = f"""
+📄 *Receipt processed*
+
+*File:* {blob_name}
+*Link:* [Download JSON (valid for 1h)]({file_url})
+
+*High price:* {ai_json.get("high_price")}
+*Low price:* {ai_json.get("low_price")}
+"""
+
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True
+    }
+
+    try:
+        resp = requests.post(url, json=payload, timeout=10)
+        log_info(f"Telegram response status={resp.status_code}")
+        resp.raise_for_status()
+    except Exception as e:
+        log_error(f"Telegram failed: {type(e).__name__}: {e}")
+        logging.exception("[PROGPY] TELEGRAM FAILED")
 
 
 def run_ocr(pdf_bytes, endpoint):
@@ -123,34 +221,6 @@ def run_ai_analysis(text, endpoint, deployment):
         raise
 
 
-def send_discord_notification(blob_name, ai_json):
-    webhook = os.getenv("DISCORD_WEBHOOK_URL")
-
-    if not webhook:
-        logging.warning("[PROGPY] DISCORD_WEBHOOK_URL not set")
-        return
-
-    message = {
-        "content": f"""
-Receipt processed
-
-File: {blob_name}
-
-High price: {ai_json.get("high_price")}
-Low price: {ai_json.get("low_price")}
-"""
-    }
-
-    try:
-        resp = requests.post(webhook, json=message, timeout=10)
-        log_info(f"Discord response status={resp.status_code}, body={resp.text[:500]}")
-        resp.raise_for_status()
-    except Exception as e:
-        log_error(f"Discord failed: {type(e).__name__}: {e}")
-        logging.exception("[PROGPY] DISCORD FAILED")
-        raise
-
-
 @app.blob_trigger(
     arg_name="blob",
     path="input%SUFFIX%/{name}",
@@ -214,7 +284,10 @@ def ocr(blob: func.InputStream):
 
         log_info(f"Output written: {output_name}")
 
-        send_discord_notification(blob_name, ai_json)
+        file_url = get_blob_sas_url("outputprod", output_name)
+
+        send_discord_notification(blob_name, ai_json, file_url)
+        send_telegram_notification(blob_name, ai_json, file_url)
 
         log_info("Pipeline completed successfully")
 
