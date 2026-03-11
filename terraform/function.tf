@@ -35,12 +35,17 @@ resource "azurerm_linux_function_app" "az-linux-fa" {
 
     DOC_INTEL_ENDPOINT = "https://${azurerm_cognitive_account.doc_intelligence.custom_subdomain_name}.cognitiveservices.azure.com/"
     
-    # AZURE_OPENAI_ENDPOINT = "https://${azurerm_cognitive_account.openai.custom_subdomain_name}.openai.azure.com"
+    AZURE_OPENAI_ENDPOINT = "https://${azurerm_cognitive_account.openai.custom_subdomain_name}.openai.azure.com"
     AZURE_OPENAI_DEPLOYMENT = "o3-mini"
 
     STORAGE_ACCOUNT_NAME = azurerm_storage_account.storage.name
 
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.func_ai.connection_string
+
+    SUFFIX = terraform.workspace
+
+    #SECRET :D
+    DISCORD_WEBHOOK_URL = var.discord_webhook
 
   }
 }

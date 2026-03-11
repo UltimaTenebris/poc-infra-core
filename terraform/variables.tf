@@ -10,3 +10,8 @@ variable "environment" {
   type        = string
   description = "Environment (dev / stage / prod)"
 }
+
+variable "discord_webhook" {
+  type      = string
+  sensitive = true
+}

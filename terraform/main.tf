@@ -38,6 +38,8 @@ resource "azurerm_cognitive_account" "openai" {
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "OpenAI"
   sku_name            = "S0"
+
+  custom_subdomain_name = "bestrong-openai-cs-${terraform.workspace}"
 }
 
 resource "azurerm_storage_container" "input" {
