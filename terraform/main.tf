@@ -68,4 +68,4 @@ resource "azurerm_cognitive_deployment" "gpt4o" {
     type     = "GlobalStandard"
     capacity = 11
   }
-}
+} 
