@@ -1,42 +1,61 @@
-name: Terraform Infrastructure
+name: Terraform CI/CD
 
-on: 
- push:
-  branches:
-   - dev
-   - main
+on:
+  push:
+    branches:
+      - dev
+      - main
+    paths:
+      - 'terraform/**'
 
 jobs:
- terraform:
-  runs-on: ubuntu-latest
+  terraform:
+    runs-on: ubuntu-latest
 
-  steps:
-  - name: Checkout
-    uses: actions/checkout@v4
+    defaults:
+      run:
+        working-directory: terraform
 
-  - name: Setup Terraform
-    uses: hashicorp/setup-terraform@v3
+    steps:
 
-  - name: Azure Login
-    uses: azure/login@v1
-    with:
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Checkout
+      uses: actions/checkout@v4
 
-  - name: Terraform Init
-    run: terraform init
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
 
-  - name: Select workspace
-    run: |
-      if [ "${{ github.ref_name }}" == "main" ]; then
-        terraform workspace select prod || terraform workspace new prod
-      else
-        terraform workspace select dev || terraform workspace new dev
-      fi
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  - name: Terraform Plan
-    run: |
-      cd terraform
-      terraform plan
-  
-  - name: Terraform Apply
-    run: terraform apply -auto-approve
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Select Workspace
+      run: |
+        if [ "${{ github.ref_name }}" == "main" ]; then
+          terraform workspace select prod || terraform workspace new prod
+        else
+          terraform workspace select dev || terraform workspace new dev
+        fi
+
+    - name: Terraform Format Check
+      run: terraform fmt -check
+
+    - name: Terraform Validate
+      run: terraform validate
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+
+    - name: Upload Plan Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: terraform-plan
+        path: terraform/tfplan
+
+    - name: Terraform Apply
+      env:
+        TF_VAR_discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
+      run: terraform apply -auto-approve tfplan
