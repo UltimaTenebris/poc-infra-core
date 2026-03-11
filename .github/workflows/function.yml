@@ -8,6 +8,8 @@ on:
     paths:
       - "function/**"
 
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,21 +18,32 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Install Azure Functions Core Tools
+        run: |
+          npm install -g azure-functions-core-tools@4 --unsafe-perm true
+
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to DEV Function
+      - name: Deploy DEV
         if: github.ref == 'refs/heads/dev'
-        uses: Azure/functions-action@v1
-        with:
-          app-name: function-app-dev
-          package: ./function
+        run: |
+          cd function
+          func azure functionapp publish function-app-dev --python
 
-      - name: Deploy to PROD Function
+      - name: Deploy PROD
         if: github.ref == 'refs/heads/main'
-        uses: Azure/functions-action@v1
-        with:
-          app-name: function-app-bestringprod
-          package: ./function
+        run: |
+          cd function
+          func azure functionapp publish function-app-bestringprod --python

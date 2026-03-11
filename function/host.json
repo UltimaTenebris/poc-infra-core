@@ -1,11 +1,26 @@
 {
   "version": "2.0",
   "logging": {
-    "applicationInsights": {
-      "samplingSettings": {
-        "isEnabled": true,
-        "excludedTypes": "Request"
-      }
+    "logLevel": {
+      "default": "Warning",
+
+      "Function": "Information",
+      "Host.Results": "Warning",
+      "Host.Aggregator": "Error",
+
+      "Host.Triggers.Blobs": "Error",
+      "Host.Triggers.Queues": "Error",
+      "Host.Startup": "Error",
+      "Host.General": "Error",
+      "Host.Executor": "Error",
+
+      "Microsoft": "Error",
+      "Microsoft.Azure.WebJobs": "Error",
+      "Microsoft.Azure.WebJobs.Extensions.Storage": "Error",
+
+      "Azure.Core": "Error",
+      "Azure.Identity": "Error",
+      "Azure.Storage": "Error"
     }
   },
   "extensionBundle": {
