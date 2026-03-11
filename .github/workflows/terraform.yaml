@@ -42,12 +42,16 @@ jobs:
         terraform workspace select dev || terraform workspace new dev
        fi
 
-    - name: Terraform Plan
-      working-directory: terraform
-      run: terraform plan
+    # - name: Terraform Plan
+    #   working-directory: terraform
+    #   env:
+    #     TF_VAR_discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
+    #   run: terraform plan
   
     - name: Terraform Apply
       working-directory: terraform
+      env:
+        TF_VAR_discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
       run: terraform apply --auto-approve
       
 
