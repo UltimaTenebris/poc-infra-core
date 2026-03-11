@@ -72,7 +72,7 @@ def send_discord_notification(blob_name, ai_json):
 
     message = {
         "content": f"""
-            Receipt processed
+            Receipt processed v4
 
             File: {blob_name}
 
