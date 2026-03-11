@@ -34,9 +34,12 @@ jobs:
     run: |
       cd terraform
       terraform init --reconfigure
+      working-directory: terraform
 
   - name: Terraform Plan
     run: terraform plan
+    working-directory: terraform
   
   - name: Terraform Apply
     run: terraform apply -auto-approve
+    working-directory: terraform
