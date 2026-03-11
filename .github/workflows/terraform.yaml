@@ -30,32 +30,24 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Terraform Init
-      run: terraform init
-
-    - name: Select Workspace
+      working-directory: terraform
       run: |
-        if [ "${{ github.ref_name }}" == "main" ]; then
-          terraform workspace select prod || terraform workspace new prod
-        else
-          terraform workspace select dev || terraform workspace new dev
-        fi
+        terraform init --reconfigure
 
-
-    - name: Terraform Validate
-      run: terraform validate
+    - name: Select workspace
+      run: |
+       if [ "${{ github.ref_name }}" == "main" ]; then
+        terraform workspace select prod || terraform workspace new prod
+       else
+        terraform workspace select dev || terraform workspace new dev
+       fi
 
     - name: Terraform Plan
-      env:
-        TF_VAR_discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
-      run: terraform plan -out=tfplan
-
-    - name: Upload Plan Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: terraform-plan
-        path: terraform/tfplan
-
+      working-directory: terraform
+      run: terraform plan
+  
     - name: Terraform Apply
-      env:
-        TF_VAR_discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
-      run: terraform apply -auto-approve tfplan
+      working-directory: terraform
+      run: terraform apply 
+      
+
