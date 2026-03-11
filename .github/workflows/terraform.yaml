@@ -31,12 +31,12 @@ jobs:
       fi
 
   - name: Terraform Init
-    run: terraform init --reconfigure
-
-  - name: Terraform Plan
     run: |
       cd terraform
-      terraform plan
+      terraform init --reconfigure
+
+  - name: Terraform Plan
+    run: terraform plan
   
   - name: Terraform Apply
     run: terraform apply -auto-approve
