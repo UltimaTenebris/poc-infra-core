@@ -45,6 +45,8 @@ jobs:
       run: terraform validate
 
     - name: Terraform Plan
+      env:
+        TF_VAR_discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
       run: terraform plan -out=tfplan
 
     - name: Upload Plan Artifact
