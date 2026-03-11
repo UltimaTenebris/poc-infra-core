@@ -13,4 +13,4 @@ resource "azurerm_application_insights" "func_ai" {
   
   workspace_id = azurerm_log_analytics_workspace.ai_ws.id
 }
- 
+  
