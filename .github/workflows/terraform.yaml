@@ -32,8 +32,7 @@ jobs:
     - name: Terraform Init
       working-directory: terraform
       run: |
-        terraform init \
-        -backend-config="key=terraform.tfstate${{ github.ref_name }}"
+        terraform init --reconfigure
 
     - name: Select workspace
       run: |
