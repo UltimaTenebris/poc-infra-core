@@ -1,1 +1,42 @@
+name: Terraform Infrastructure
 
+on: 
+ push:
+  branches:
+   - dev
+   - main
+
+jobs:
+ terraform:
+  runs-on: ubuntu-latest
+
+  steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - name: Setup Terraform
+    uses: hashicorp/setup-terraform@v3
+
+  - name: Azure Login
+    uses: azure/login@v1
+    with:
+      creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+  - name: Terraform Init
+    run: terraform init
+
+  - name: Select workspace
+    run: |
+      if [ "${{ github.ref_name }}" == "main" ]; then
+        terraform workspace select prod || terraform workspace new prod
+      else
+        terraform workspace select dev || terraform workspace new dev
+      fi
+
+  - name: Terraform Plan
+    run: |
+      cd terraform
+      terraform plan
+  
+  - name: Terraform Apply
+    run: terraform apply -auto-approve
