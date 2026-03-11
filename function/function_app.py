@@ -120,7 +120,7 @@ def send_telegram_notification(blob_name, ai_json, file_url):
         "parse_mode": "Markdown",
         "disable_web_page_preview": True
     }
-
+ 
     try:
         resp = requests.post(url, json=payload, timeout=10)
         log_info(f"Telegram response status={resp.status_code}")

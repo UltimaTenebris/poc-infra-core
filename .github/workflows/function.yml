@@ -39,7 +39,7 @@ jobs:
       - name: Deploy DEV
         if: github.ref == 'refs/heads/dev'
         run: |
-          cd function
+          cd function 
           func azure functionapp publish function-app-bestringdev --python --verbose
 
       - name: Deploy PROD
