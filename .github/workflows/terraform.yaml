@@ -22,9 +22,6 @@ jobs:
     with:
       creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  - name: Terraform Init
-    run: terraform init
-
   - name: Select workspace
     run: |
       if [ "${{ github.ref_name }}" == "main" ]; then
@@ -32,6 +29,9 @@ jobs:
       else
         terraform workspace select dev || terraform workspace new dev
       fi
+
+  - name: Terraform Init
+    run: terraform init --reconfigure
 
   - name: Terraform Plan
     run: |
